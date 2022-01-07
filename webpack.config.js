@@ -1,54 +1,41 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-// 负责将html文档虚拟到根目录下
-let htmlWebpackPlugin = new HtmlWebpackPlugin({
-  // 虚拟的html文件名 index.html
-  filename: 'index.html',
-  // 虚拟html的模板为 src下的index.html
-  template: path.resolve(__dirname, './expmale/index.html')
-})
-
 module.exports = {
-  // 开发模式
   mode: 'development',
-  // 配置入口文件
-  entry: './src/index.js',
-  // 出口文件目录为根目录下dist, 输出的文件名为main
+  entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.js'
   },
-  // 配置开发服务器, 并配置自动刷新
+  // 配置开发服务器
   devServer: {
     // 根目录下dist为基本目录
-    //contentBase: path.join(__dirname, 'dist'),    // webpack5之前用
+    // contentBase: path.join(__dirname, 'dist'),   // webpack5之前用
     static: {                                       // webpack5之后用
       directory: path.join(__dirname, 'dist')
     },
-    // 自动压缩代码
-    compress: true,
-    // 服务端口为1208
-    port: 1208,
-    // 自动打开浏览器
-    open: true
+    compress: true,                           // 自动压缩代码
+    port: 8000,
+    open: true,                               // 自动打开浏览器
   },
-  // 装载虚拟目录插件
-  plugins: [htmlWebpackPlugin],
   // 配置loader
   module: {
-    // 根据文件后缀匹配规则
     rules: [
-      // 配置js/jsx语法解析
-      { test: /\.js|jsx$/, use: 'babel-loader', exclude: /node_modules/ },
+      { test: /\.js|tsx$/, use: 'babel-loader', exclude: /node_modules/ },
       {
         test: /\.scss$/,
-        use: [
-          "style-loader", // creates style nodes from JS strings
-          "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS
-        ]
+        // 从JS字符串创建样式节点 <= 将CSS转换为CommonJS <= 将Sass编译为CSS
+        use: ["style-loader", "css-loader", "sass-loader"]
       }
     ]
-  }
+  },
+  // 装载插件
+  plugins: [
+    // 负责将html文档虚拟到根目录下
+    new HtmlWebpackPlugin({
+      filename: 'index.html',                 // 虚拟的html文件名 index.html
+      template: path.resolve(__dirname, './src/index.html')   // 虚拟html的模板为 src下的index.html
+    })
+  ],
 }
